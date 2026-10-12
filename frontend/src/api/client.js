@@ -2,6 +2,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "https://student-skills-interns
 
 let csrfToken = "";
 let csrfHeader = "X-XSRF-TOKEN";
+
 async function ensureCsrf() {
 const response = await fetch("${API_BASE}/api/auth/csrf", {
 method: "GET",
@@ -24,46 +25,49 @@ csrfHeader = data.headerName || "X-XSRF-TOKEN";
 
 return csrfToken;
 }
+
 export async function api(path, options = {}) {
-  const method = (options.method || "GET").toUpperCase();
-  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
-    await ensureCsrf();
-  }
+const method = (options.method || "GET").toUpperCase();
 
-  const headers = {
-    ...(options.body ? { "Content-Type": "application/json" } : {}),
-    ...(options.headers || {}),
-  };
-  if (csrfToken && method !== "GET" && method !== "HEAD") {
-    headers[csrfHeader] = csrfToken;
-  }
+if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+await ensureCsrf();
+}
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    method,
-    credentials: "include",
-    headers,
-  });
+const headers = {
+...(options.body ? { "Content-Type": "application/json" } : {}),
+...(options.headers || {}),
+};
 
-  if (response.status === 204) {
-    return null;
-  }
+if (csrfToken && method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+headers[csrfHeader] = csrfToken;
+}
 
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+const response = await fetch("${API_BASE}${path}", {
+...options,
+method,
+credentials: "include",
+headers,
+});
 
-  if (!response.ok) {
-    const message = data?.message || "Request failed";
-    const details = data?.details?.length ? ` (${data.details.join(", ")})` : "";
-    const error = new Error(message + details);
-    error.status = response.status;
-    error.body = data;
-    throw error;
-  }
+if (response.status === 204) {
+return null;
+}
 
-  return data;
+const text = await response.text();
+const data = text ? JSON.parse(text) : null;
+
+if (!response.ok) {
+const message = data?.message || "Request failed";
+const details = data?.details?.length ? " (${data.details.join(", ")})" : "";
+const error = new Error(message + details);
+error.status = response.status;
+error.body = data;
+throw error;
+}
+
+return data;
 }
 
 export function getApiBase() {
-  return API_BASE;
+return API_BASE;
 }
