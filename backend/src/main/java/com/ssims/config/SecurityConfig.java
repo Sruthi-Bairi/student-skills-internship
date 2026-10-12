@@ -44,7 +44,11 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-		csrfTokenRepository.setCookieCustomizer(cookie -> cookie.path("/").sameSite("Lax"));
+		csrfTokenRepository.setCookieCustomizer(cookie ->
+    cookie.path("/")
+          .sameSite("None")
+          .secure(true)
+);
 		CsrfTokenRequestHandler requestHandler = new SpaCsrfTokenRequestHandler();
 
 		http
