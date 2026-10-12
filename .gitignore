@@ -1,0 +1,22 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+**/application-local.properties
+**/application-secret.properties
+
+# Java / Maven build output
+**/target/
+
+# React / Node build output
+**/node_modules/
+**/dist/
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Separate generated Maven project
+/student-skills-internship/
