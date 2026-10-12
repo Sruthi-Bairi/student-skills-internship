@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8081";
+const API_BASE = import.meta.env.VITE_API_URL || "https://student-skills-internship.onrender.com";
 
 let csrfToken = "";
 let csrfHeader = "X-XSRF-TOKEN";
