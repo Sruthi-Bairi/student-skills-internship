@@ -3,31 +3,26 @@ const API_BASE = import.meta.env.VITE_API_URL || "https://student-skills-interns
 let csrfToken = "";
 let csrfHeader = "X-XSRF-TOKEN";
 async function ensureCsrf() {
-  const response = await fetch(`${API_BASE}/api/auth/csrf`, {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
-  });
+const response = await fetch("${API_BASE}/api/auth/csrf", {
+method: "GET",
+credentials: "include",
+cache: "no-store",
+});
 
-  if (!response.ok) {
-    throw new Error("Could not initialize security token");
-  }
+if (!response.ok) {
+throw new Error("Could not initialize security token");
+}
 
-  // Read the CSRF token from the cookie set by Spring Security.
-  const cookie = document.cookie
-    .split("; ")
-    .find((item) => item.startsWith("XSRF-TOKEN="));
+const data = await response.json();
 
-  if (!cookie) {
-    throw new Error(
-      "CSRF cookie is missing. Please check the backend configuration."
-    );
-  }
+if (!data.token) {
+throw new Error("CSRF token was not returned by the backend");
+}
 
-  csrfToken = decodeURIComponent(cookie.substring("XSRF-TOKEN=".length));
-  csrfHeader = "X-XSRF-TOKEN";
+csrfToken = data.token;
+csrfHeader = data.headerName || "X-XSRF-TOKEN";
 
-  return csrfToken;
+return csrfToken;
 }
 export async function api(path, options = {}) {
   const method = (options.method || "GET").toUpperCase();
