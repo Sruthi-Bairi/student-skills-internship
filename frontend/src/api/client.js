@@ -4,7 +4,7 @@ let csrfToken = "";
 let csrfHeader = "X-XSRF-TOKEN";
 
 async function ensureCsrf() {
-const response = await fetch("${API_BASE}/api/auth/csrf", {
+const response = await fetch(`${API_BASE}/api/auth/csrf`, {
 method: "GET",
 credentials: "include",
 cache: "no-store",
@@ -38,11 +38,16 @@ const headers = {
 ...(options.headers || {}),
 };
 
-if (csrfToken && method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+if (
+csrfToken &&
+method !== "GET" &&
+method !== "HEAD" &&
+method !== "OPTIONS"
+) {
 headers[csrfHeader] = csrfToken;
 }
 
-const response = await fetch("${API_BASE}${path}", {
+const response = await fetch(`${API_BASE}${path}`, {
 ...options,
 method,
 credentials: "include",
@@ -58,7 +63,9 @@ const data = text ? JSON.parse(text) : null;
 
 if (!response.ok) {
 const message = data?.message || "Request failed";
-const details = data?.details?.length ? " (${data.details.join(", ")})" : "";
+const details = data?.details?.length
+? ` (${data.details.join(", ")})`
+: "";
 const error = new Error(message + details);
 error.status = response.status;
 error.body = data;
